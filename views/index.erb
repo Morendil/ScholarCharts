@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript">
+    
+    // Load the Visualization API and the piechart package.
+    google.load('visualization', '1', {'packages':['corechart']});
+      
+    // Set a callback to run when the Google Visualization API is loaded.
+//    google.setOnLoadCallback(drawChart);
+      
+    function drawChart() {
+      params = "?q="+ encodeURIComponent($("#q")[0].value);
+      params += "&as_ylo="+$("#as_ylo")[0].value;
+      params += "&as_yhi="+$("#as_yhi")[0].value;
+      params += "&citations="+$("#q")[0].checked;
+      var jsonData = $.ajax({
+          url: "/data"+params,
+          dataType:"json",
+          async: false
+          }).responseText;
+          
+      // Create our data table out of JSON data loaded from server.
+      var data = new google.visualization.DataTable(jsonData);
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      chart.draw(data, {width: 600, height: 360});
+    }
+
+    function doSubmit() {
+      try {drawChart();}
+      catch(err) {}
+    }
+    </script>
+  </head>
+
+  <body>
+    <form action="#" style="margin-top:10%; margin-left:10%; width:80%" onSubmit="doSubmit(); return false;"> 
+    Article title or search phrase: <input id="q" type="text" style="width:100%"/>
+    <input id="citations" type="checkbox">Search citations</input>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    From year <input id="as_ylo" type="text" size="4" value="1970"/> to year <input id="as_yhi" type="text" size="4" value="2012"/> 
+    <input type="submit"/>
+    </form>
+    <!--Div that will hold the pie chart-->
+    <div id="chart_div" style="margin-left:auto; margin-right:auto; width:60%"></div>
+  </body>
+</html>
